@@ -1,14 +1,26 @@
 package com.example.micke.laoshu_golf;
 
 import com.example.micke.laoshu_golf.util.SystemUiHider;
+import com.metaio.sdk.ARViewActivity;
+import com.metaio.sdk.MetaioDebug;
+import com.metaio.sdk.jni.IGeometry;
+import com.metaio.sdk.jni.IMetaioSDKCallback;
+import com.metaio.tools.io.AssetsManager;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
+
+import java.io.IOException;
 
 
 /**
@@ -17,7 +29,10 @@ import android.view.View;
  *
  * @see SystemUiHider
  */
-public class golf extends Activity {
+public class golf extends ARViewActivity {
+
+    private AssetsExtracter mTask;
+
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -47,10 +62,40 @@ public class golf extends Activity {
     private SystemUiHider mSystemUiHider;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected int getGUILayout() {
+        return 0;
+    }
+
+    @Override
+    protected IMetaioSDKCallback getMetaioSDKCallbackHandler() {
+        return null;
+    }
+
+    @Override
+    protected void loadContents() {
+
+    }
+
+    @Override
+    protected void onGeometryTouched(IGeometry geometry) {
+
+    }
+    public void playGolf(View view){
+        Intent intent = new Intent(this, golf.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_golf);
+        // Enable metaio SDK debug log messages based on build configuration
+        MetaioDebug.enableLogging(BuildConfig.DEBUG);
+
+        // extract all the assets
+        mTask = new AssetsExtracter();
+        mTask.execute(0);
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
@@ -114,6 +159,59 @@ public class golf extends Activity {
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
     }
+
+    /**
+     * This task extracts all the application assets to an external or internal location
+     * to make them accessible to Metaio SDK
+     */
+    private class AssetsExtracter extends AsyncTask<Integer, Integer, Boolean>
+    {
+
+        @Override
+        protected void onPreExecute()
+        {
+        }
+
+        @Override
+        protected Boolean doInBackground(Integer... params)
+        {
+            try
+            {
+                // Extract all assets and overwrite existing files if debug build
+                AssetsManager.extractAllAssets(getApplicationContext(), BuildConfig.DEBUG);
+            }
+            catch (IOException e)
+            {
+                MetaioDebug.log(Log.ERROR, "Error extracting assets: "+e.getMessage());
+                MetaioDebug.printStackTrace(Log.ERROR, e);
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result)
+        {
+            if (result)
+            {
+                // Start AR Activity on success
+                Intent intent = new Intent(getApplicationContext(), golf.class);
+                startActivity(intent);
+            }
+            else
+            {
+                // Show a toast with an error message
+                Toast toast = Toast.makeText(getApplicationContext(), "Error extracting application assets!", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+                toast.show();
+            }
+
+            finish();
+        }
+
+    }
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {

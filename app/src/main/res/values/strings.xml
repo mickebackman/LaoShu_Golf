@@ -3,4 +3,8 @@
 
     <string name="dummy_button">PLAY SOME GOLF</string>
     <string name="dummy_content">Golf golf golf</string>
+    <string name="title_activity_play">play</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 </resources>

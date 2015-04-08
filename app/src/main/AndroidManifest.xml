@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.micke.laoshu_golf" >
+    <uses-permission android:name="android.permission.CAMERA" />
+       
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+       
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+       
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+     
+       
+    <!-- Only needed if Visual Search is used -->
+       
+    <uses-permission android:name="android.permission.INTERNET" />
+     
+       
+    <!-- These permissions are only needed for debugging -->
+       
+    <uses-permission android:name="android.permission.SET_DEBUG_APP" />
+       
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -18,6 +37,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".play"
+            android:label="@string/title_activity_play"
+            android:parentActivityName=".golf" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.micke.laoshu_golf.golf" />
+        </activity>
     </application>
-
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.sensor.compass"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.sensor.gyroscope"
+        android:required="true" />
 </manifest>
