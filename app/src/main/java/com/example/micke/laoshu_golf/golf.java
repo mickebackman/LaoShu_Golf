@@ -196,6 +196,7 @@ public class golf extends ARViewActivity {
             if (result)
             {
                 // Start AR Activity on success
+                //TODO är det här det är fel så vi måste göra om så det finns ännu en activity som gör allt detta som golf gör?
                 Intent intent = new Intent(getApplicationContext(), golf.class);
                 startActivity(intent);
             }
